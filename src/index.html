@@ -1,0 +1,66 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music Note Flash Cards</title>
+  <meta name="description" content="">
+
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+  <meta property="og:image:alt" content="">
+  <script src="/Main.js"></script>
+
+  <style>
+    .c-flash {
+      text-align: center;
+    }
+    .c-flash img {
+      height: 80vh;
+    }
+      .c-flash .c-flash__info {
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 16px;
+        font-size: 0.8em;
+        background: #F0F3F4;
+        display: inline-block;
+      }
+      .c-flash .c-flash__track-name,
+      .c-flash .c-flash__track-artist {
+        font-weight: bold;
+      }
+      .c-flash .c-flash__controls {
+        font-size: 0.8em;
+        margin-top: 8px;
+      }
+        .c-flash .c-flash__controls button {
+          background: lightblue;
+          color: white;
+          border: 0;
+        }
+          .c-flash .c-flash__controls button:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+          }
+          .c-flash .c-flash__controls button:hover {
+            background: blue;
+          }
+          .c-flash .c-flash__controls button.disabled {
+            background: #DDD;
+          }
+      .c-flash .c-flash__indicator {
+        margin-left: 4px;
+        margin-right: 4px;
+      }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    var app = Elm.Main.init({ node: document.getElementById("root") });
+  </script>
+</body>
+</html>
