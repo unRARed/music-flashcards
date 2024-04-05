@@ -2,6 +2,9 @@ module Main exposing (..)
 import Browser
 import Debug
 import Array
+import Time
+import Random
+import Random.List
 import Html exposing (Html, button, img, div, text, span)
 import Html.Attributes exposing (class, src, id, disabled)
 import Html.Events exposing (onClick)
@@ -66,6 +69,13 @@ getCard model =
             Just t -> t
             Nothing -> defaultCard
 
+shuffleCards : List Card -> List Card
+shuffleCards deck =
+    let
+        shuffledCards = Random.List.shuffle deck
+    in
+        Random.step shuffledCards (Random.initialSeed 123)
+            |> Tuple.first
 
 --------------------------------------------------------------------------
 -- MODEL
@@ -74,18 +84,21 @@ getCard model =
 type alias Model =
   { cardIndex: Int
   , cards: List Card
+  , isFlipped: Bool
   }
 
 -- init : Model
 init =
     { cardIndex = 0
-    , cards = allCards
+    , cards = shuffleCards allCards
+    , isFlipped = False
     }
 
 type Msg =
   PreviousCard
   | NextCard
-  --| Flip
+  | Flip
+  | Reset
 
 
 --------------------------------------------------------------------------
@@ -96,11 +109,21 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     PreviousCard ->
-      { model | cardIndex = max (model.cardIndex - 1) 0 }
+      { model | isFlipped = False
+      , cardIndex = max (model.cardIndex - 1) 0
+      }
     NextCard ->
         let maximum = List.length(model.cards) - 1
         in
-            { model | cardIndex = min (model.cardIndex + 1) maximum }
+            { model | isFlipped = False
+            , cardIndex = min (model.cardIndex + 1) maximum
+            }
+    Flip ->
+        { model | isFlipped = not model.isFlipped }
+    Reset ->
+        { model | cards = shuffleCards model.cards
+        , isFlipped = False
+        }
 
 --------------------------------------------------------------------------
 -- VIEW
@@ -114,32 +137,38 @@ view model =
       totalCards = String.fromInt (List.length model.cards)
       isFirstCard = model.cardIndex == 0
       isLastCard = cardNumber == totalCards
+      face = if model.isFlipped then "back" else "front"
   in
-      div [ class "c-flash" ]
-        [ div [ class "c-flash__info" ]
-          [ span [ class "c-flash__card-name" ] [ text card.name  ]
-        ]
-        , div []
-          [ img
-            [ src ("/images/" ++ card.name ++ "_back.JPG")
-            , class "c-flash__card-back"
+      div [
+          class (if model.isFlipped then "c-flash c-flash--flipped" else "c-flash")
+          ]
+          -- Card Graphic
+          [ div []
+              [ img
+                  [ src ("/images/" ++ card.name ++ "_" ++ face ++ ".JPG")
+                  , class "c-flash__card-back"
+                  ] []
+              ]
+          -- Controls and Index indication
+          , div [ class "c-flash__controls" ]
+              [ button [ onClick PreviousCard
+                , class (if isFirstCard then "disabled" else "")
+                , disabled isFirstCard
+              ] [ text "< Previous" ]
+              , span [class "c-flash__indicator" ] [
+                  text (cardNumber ++ " / " ++ totalCards) ]
+              , button [ onClick NextCard
+                    , class (if isLastCard then "disabled" else "")
+                    , disabled isLastCard
+              ] [ text "Next >" ]
+              , button [ class "u-loud", onClick Flip ] [ text "Flip!" ]
+              , button [ onClick Reset ] [ text "Reset" ]
             ]
-            []
+          -- Hidden details
+          , div [ class "c-flash__info" ]
+                  [ span [ class "c-flash__card-name" ] [ text card.name  ]
+              ]
           ]
-        , div [ class "c-flash__controls" ]
-            [ button [ onClick PreviousCard
-              , class (if isFirstCard then "disabled" else "")
-              , disabled isFirstCard
-            ] [ text "< Previous" ]
-            , span [class "c-flash__indicator" ]
-                [ text (cardNumber ++ " / " ++ totalCards) ]
-            , button [ onClick NextCard
-              , class (if isLastCard then "disabled" else "")
-              , disabled isLastCard
-            ] [ text "Next >" ]
-          ]
-        ]
-
 
 --------------------------------------------------------------------------
 -- MAIN

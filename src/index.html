@@ -12,21 +12,20 @@
   <meta property="og:image" content="">
   <meta property="og:image:alt" content="">
   <script src="/Main.js"></script>
-
+  <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
   <style>
     .c-flash {
       text-align: center;
     }
+    .c-flash button { cursor: pointer; }
     .c-flash img {
-      height: 80vh;
+      height: 70vh;
     }
       .c-flash .c-flash__info {
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        padding: 16px;
-        font-size: 0.8em;
-        background: #F0F3F4;
+        padding: 8px;
+        font-size: 1.8em;
         display: inline-block;
+        font-weight: bold;
       }
       .c-flash .c-flash__track-name,
       .c-flash .c-flash__track-artist {
@@ -37,16 +36,16 @@
         margin-top: 8px;
       }
         .c-flash .c-flash__controls button {
-          background: lightblue;
-          color: white;
+          background: cyan;
           border: 0;
+          padding: 6px 9px;
         }
           .c-flash .c-flash__controls button:first-child {
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
           }
           .c-flash .c-flash__controls button:hover {
-            background: blue;
+            background: #afffff;
           }
           .c-flash .c-flash__controls button.disabled {
             background: #DDD;
@@ -55,6 +54,19 @@
         margin-left: 4px;
         margin-right: 4px;
       }
+    .c-flash .c-flash__info {
+      display: none;
+    }
+    .c-flash.c-flash--flipped .c-flash__info {
+      display: block;
+    }
+    .u-loud {
+      font-size: 1.2em;
+      margin: 6px;
+    }
+    .u-loud:hover {
+      background: #68ff84 !important;
+    }
   </style>
 </head>
 <body>
