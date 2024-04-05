@@ -1,0 +1,12 @@
+{
+  "targets": {
+    "main": {
+      "inputs": [
+        "./src/Main.elm"
+      ],
+      "output": "./src/Main.js"
+    }
+  },
+  "serve": "./src/",
+  "port": 3000
+}

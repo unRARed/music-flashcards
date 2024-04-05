@@ -1,0 +1,1 @@
+elm-watch: ELM_WATCH_EXIT_ON_STDIN_END=false node server.mjs hot
