@@ -791,7 +791,7 @@ ${variant}`;
   var VERSION = "2.0.0-beta.2";
   var TARGET_NAME = "main";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1712310117456"
+    "1712339872488"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -8181,7 +8181,8 @@ var $author$project$Main$shuffleCards = function (deck) {
 var $author$project$Main$init = {
 	cardIndex: 0,
 	cards: $author$project$Main$shuffleCards($author$project$Main$allCards),
-	isFlipped: false
+	isCardFlipped: false,
+	isDeckFlipped: false
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -8815,7 +8816,7 @@ var $author$project$Main$update = F2(
 					model,
 					{
 						cardIndex: A2($elm$core$Basics$max, model.cardIndex - 1, 0),
-						isFlipped: false
+						isCardFlipped: false
 					});
 			case 'NextCard':
 				var maximum = $elm$core$List$length(model.cards) - 1;
@@ -8823,23 +8824,29 @@ var $author$project$Main$update = F2(
 					model,
 					{
 						cardIndex: A2($elm$core$Basics$min, model.cardIndex + 1, maximum),
-						isFlipped: false
+						isCardFlipped: false
 					});
-			case 'Flip':
+			case 'PeekCard':
 				return _Utils_update(
 					model,
-					{isFlipped: !model.isFlipped});
+					{isCardFlipped: !model.isCardFlipped});
+			case 'FlipDeck':
+				return _Utils_update(
+					model,
+					{isDeckFlipped: !model.isDeckFlipped});
 			default:
 				return _Utils_update(
 					model,
 					{
+						cardIndex: 0,
 						cards: $author$project$Main$shuffleCards(model.cards),
-						isFlipped: false
+						isCardFlipped: false
 					});
 		}
 	});
-var $author$project$Main$Flip = {$: 'Flip'};
+var $author$project$Main$FlipDeck = {$: 'FlipDeck'};
 var $author$project$Main$NextCard = {$: 'NextCard'};
+var $author$project$Main$PeekCard = {$: 'PeekCard'};
 var $author$project$Main$PreviousCard = {$: 'PreviousCard'};
 var $author$project$Main$Reset = {$: 'Reset'};
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -8947,6 +8954,7 @@ var $author$project$Main$getCard = function (model) {
 		return $author$project$Main$defaultCard;
 	}
 };
+var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -8978,7 +8986,14 @@ var $author$project$Main$view = function (model) {
 	var totalCards = $elm$core$String$fromInt(
 		$elm$core$List$length(model.cards));
 	var isFirstCard = !model.cardIndex;
-	var face = model.isFlipped ? 'back' : 'front';
+	var face = function () {
+		var _v0 = model.isDeckFlipped;
+		if (_v0) {
+			return model.isCardFlipped ? 'front' : 'back';
+		} else {
+			return model.isCardFlipped ? 'back' : 'front';
+		}
+	}();
 	var cardNumber = $elm$core$String$fromInt(model.cardIndex + 1);
 	var isLastCard = _Utils_eq(cardNumber, totalCards);
 	var card = $author$project$Main$getCard(model);
@@ -8987,13 +9002,16 @@ var $author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class(
-				model.isFlipped ? 'c-flash c-flash--flipped' : 'c-flash')
+				model.isCardFlipped ? 'c-flash c-flash--flipped' : 'c-flash')
 			]),
 		_List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('c-flash__card')
+					]),
 				_List_fromArray(
 					[
 						A2(
@@ -9048,18 +9066,46 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Next >')
-							])),
-						A2(
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('c-flash__controls-peek')
+					]),
+				_List_fromArray(
+					[
+						(!model.isCardFlipped) ? A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('u-loud'),
-								$elm$html$Html$Events$onClick($author$project$Main$Flip)
+								$elm$html$Html$Events$onClick($author$project$Main$PeekCard)
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Flip!')
-							])),
+								$elm$html$Html$text('Peek!')
+							])) : A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('u-quiet'),
+								$elm$html$Html$Events$onClick($author$project$Main$PeekCard)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Flip back over')
+							]))
+					])),
+				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('c-flash__controls-meta')
+					]),
+				_List_fromArray(
+					[
 						A2(
 						$elm$html$Html$button,
 						_List_fromArray(
@@ -9069,27 +9115,28 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Reset')
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('c-flash__info')
-					]),
-				_List_fromArray(
-					[
+							])),
 						A2(
-						$elm$html$Html$span,
+						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('c-flash__card-name')
+								$elm$html$Html$Events$onClick($author$project$Main$FlipDeck)
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(card.name)
+								$elm$html$Html$text('Flip Deck')
 							]))
-					]))
+					])),
+				model.isDeckFlipped ? A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('u-quiet')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Deck is currently flipped.')
+					])) : $elm$html$Html$text('')
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(

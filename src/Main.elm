@@ -5,7 +5,8 @@ import Array
 import Time
 import Random
 import Random.List
-import Html exposing (Html, button, img, div, text, span)
+import Process
+import Html exposing (Html, button, img, div, text, span, hr)
 import Html.Attributes exposing (class, src, id, disabled)
 import Html.Events exposing (onClick)
 
@@ -84,20 +85,23 @@ shuffleCards deck =
 type alias Model =
   { cardIndex: Int
   , cards: List Card
-  , isFlipped: Bool
+  , isCardFlipped: Bool
+  , isDeckFlipped: Bool
   }
 
 -- init : Model
 init =
     { cardIndex = 0
     , cards = shuffleCards allCards
-    , isFlipped = False
+    , isCardFlipped = False
+    , isDeckFlipped = False
     }
 
 type Msg =
   PreviousCard
   | NextCard
-  | Flip
+  | PeekCard
+  | FlipDeck
   | Reset
 
 
@@ -109,20 +113,23 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     PreviousCard ->
-      { model | isFlipped = False
+      { model | isCardFlipped = False
       , cardIndex = max (model.cardIndex - 1) 0
       }
     NextCard ->
         let maximum = List.length(model.cards) - 1
         in
-            { model | isFlipped = False
+            { model | isCardFlipped = False
             , cardIndex = min (model.cardIndex + 1) maximum
             }
-    Flip ->
-        { model | isFlipped = not model.isFlipped }
+    PeekCard ->
+        { model | isCardFlipped = not model.isCardFlipped }
+    FlipDeck ->
+        { model | isDeckFlipped = not model.isDeckFlipped }
     Reset ->
         { model | cards = shuffleCards model.cards
-        , isFlipped = False
+        , cardIndex = 0
+        , isCardFlipped = False
         }
 
 --------------------------------------------------------------------------
@@ -137,13 +144,17 @@ view model =
       totalCards = String.fromInt (List.length model.cards)
       isFirstCard = model.cardIndex == 0
       isLastCard = cardNumber == totalCards
-      face = if model.isFlipped then "back" else "front"
+      face = case model.isDeckFlipped of
+          True ->
+              if model.isCardFlipped then "front" else "back"
+          _ ->
+              if model.isCardFlipped then "back" else "front"
   in
       div [
-          class (if model.isFlipped then "c-flash c-flash--flipped" else "c-flash")
+          class (if model.isCardFlipped then "c-flash c-flash--flipped" else "c-flash")
           ]
           -- Card Graphic
-          [ div []
+          [ div [ class "c-flash__card" ]
               [ img
                   [ src ("/images/" ++ card.name ++ "_" ++ face ++ ".JPG")
                   , class "c-flash__card-back"
@@ -161,13 +172,25 @@ view model =
                     , class (if isLastCard then "disabled" else "")
                     , disabled isLastCard
               ] [ text "Next >" ]
-              , button [ class "u-loud", onClick Flip ] [ text "Flip!" ]
-              , button [ onClick Reset ] [ text "Reset" ]
             ]
-          -- Hidden details
-          , div [ class "c-flash__info" ]
-                  [ span [ class "c-flash__card-name" ] [ text card.name  ]
+          , div [ class "c-flash__controls-peek" ]
+              [ if not model.isCardFlipped then
+                    button [ onClick PeekCard ] [ text "Peek!" ]
+                else
+                    button [ class "u-quiet"
+                        , onClick PeekCard
+                    ] [ text "Flip back over" ]
               ]
+          , hr [] []
+          , div [ class "c-flash__controls-meta" ]
+              [ button [ onClick Reset ] [ text "Reset" ]
+              , button [ onClick FlipDeck ] [ text "Flip Deck" ]
+            ]
+          , if model.isDeckFlipped then
+              span [ class "u-quiet" ] [ text "Deck is currently flipped." ]
+          else
+              text ""
+          -- Hidden details
           ]
 
 --------------------------------------------------------------------------

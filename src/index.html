@@ -14,17 +14,21 @@
   <script src="/Main.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
   <style>
+    hr { margin: 8px 0 8px; }
+    button { margin-bottom: 0; }
     .c-flash {
       text-align: center;
     }
     .c-flash button { cursor: pointer; }
-    .c-flash img {
-      height: 70vh;
+    .c-flash .c-flash__card {
+      margin-top: 20px;
+    }
+    .c-flash .c-flash__card img {
+      height: 60vh;
     }
       .c-flash .c-flash__info {
-        padding: 8px;
-        font-size: 1.8em;
-        display: inline-block;
+        margin-left: 12px;
+        font-size: 1.4em;
         font-weight: bold;
       }
       .c-flash .c-flash__track-name,
@@ -35,37 +39,55 @@
         font-size: 0.8em;
         margin-top: 8px;
       }
-        .c-flash .c-flash__controls button {
+        .c-flash [class^='c-flash__controls'] button + button {
+          margin-left: 8px;
+        }
+        .c-flash [class^='c-flash__controls'] button {
           background: cyan;
           border: 0;
           padding: 6px 9px;
+        }
+        .c-flash .c-flash__controls-peek button {
+          margin-top: 8px;
+        }
+        .c-flash .c-flash__controls-meta button {
+          padding: 3px 6px;
+          font-size: 0.8em;
+          background: #BBB;
         }
           .c-flash .c-flash__controls button:first-child {
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
           }
-          .c-flash .c-flash__controls button:hover {
+          .c-flash [class^='c-flash__controls'] button:hover {
             background: #afffff;
           }
           .c-flash .c-flash__controls button.disabled {
             background: #DDD;
           }
       .c-flash .c-flash__indicator {
-        margin-left: 4px;
-        margin-right: 4px;
+        margin-left: 8px;
+        margin-right: 8px;
       }
     .c-flash .c-flash__info {
       display: none;
     }
-    .c-flash.c-flash--flipped .c-flash__info {
-      display: block;
+    .c-flash.c-flash--flipped .c-flash__controls-peek button {
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+    .c-flash .c-flash__controls-peek button:hover {
+      background: #68ff84;
+    }
+    .c-flash.c-flash--flipped .c-flash__controls-peek button:hover {
+      background: #afffff;
     }
     .u-loud {
-      font-size: 1.2em;
-      margin: 6px;
+      font-size: 1.4em;
+      margin-left: 12px;
     }
-    .u-loud:hover {
-      background: #68ff84 !important;
+    .u-quiet {
+      font-size: 0.6em;
     }
   </style>
 </head>
